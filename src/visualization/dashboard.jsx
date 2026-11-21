@@ -559,14 +559,14 @@ export default function RecognitionIntelligence() {
           </IconButton>
         </div>
 
-        {/* ── VISUAL ANALYTICS TAB ── */}
+        {/* VISUAL ANALYTICS TAB */}
         {activeTab === "overview" && (
           <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
             <VisualAnalytics stats={stats} />
           </div>
         )}
 
-        {/* ── CHAT TAB ── */}
+        {/* CHAT TAB */}
         {activeTab === "chat" && (
           <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#f9fafb", minWidth: 0 }}>
             <div ref={scrollRef} style={{
@@ -646,7 +646,7 @@ export default function RecognitionIntelligence() {
           </div>
         )}
 
-        {/* ── GRAPH TAB (placeholder) ── */}
+        {/* GRAPH TAB (placeholder) */}
         {activeTab === "graph" && (
           <div style={{
             flex: 1, display: "flex", alignItems: "center", justifyContent: "center",

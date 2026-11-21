@@ -9,7 +9,6 @@ import time
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
 
 from src.llm.gemini_client import GeminiClient

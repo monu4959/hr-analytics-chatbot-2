@@ -21,8 +21,6 @@ Run standalone:
 import sys
 import os
 import re
-import warnings
-warnings.filterwarnings("ignore")
 
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -32,9 +30,7 @@ load_dotenv()
 
 from neo4j import GraphDatabase
 
-# ---------------------------------------------------------------------------
 # Singleton driver
-# ---------------------------------------------------------------------------
 
 _driver = None
 
@@ -56,9 +52,7 @@ def _run_query(cypher: str, params: dict = {}) -> list:
         return [dict(record) for record in result]
 
 
-# ---------------------------------------------------------------------------
 # Neo4j query tool
-# ---------------------------------------------------------------------------
 
 def neo4j_query(query: str) -> str:
     """
@@ -236,7 +230,7 @@ def neo4j_query(query: str) -> str:
                 key=lambda x: x["count"] or 0, reverse=True
             )[:5]
             if gives:
-                results.append(f"\n  Recognizes:")
+                results.append("\n  Recognizes:")
                 for g in gives:
                     results.append(f"    → {g['to']}: {g['count']} times")
 
@@ -245,7 +239,7 @@ def neo4j_query(query: str) -> str:
                 key=lambda x: x["count"] or 0, reverse=True
             )[:5]
             if receives:
-                results.append(f"\n  Recognized by:")
+                results.append("\n  Recognized by:")
                 for r in receives:
                     results.append(f"    ← {r['from']}: {r['count']} times")
         results.append("")
@@ -281,9 +275,7 @@ def neo4j_query(query: str) -> str:
     return "\n".join(results)
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 GROUPS = [
     "Leadership", "Engineering", "Design / Creative", "Customer Service",
@@ -335,9 +327,7 @@ def _extract_n(query: str, default: int = 10) -> int:
     return default
 
 
-# ---------------------------------------------------------------------------
 # Quick test
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     tests = [

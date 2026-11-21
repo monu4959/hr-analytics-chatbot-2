@@ -12,9 +12,7 @@ Columns: message, award_title, recipient_title, nominator_title,
 """
 
 import re
-import warnings
 import os
-warnings.filterwarnings("ignore")
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 from pathlib import Path
@@ -23,9 +21,7 @@ import numpy as np
 import chromadb
 from sentence_transformers import SentenceTransformer
 
-# ---------------------------------------------------------------------------
 # Config
-# ---------------------------------------------------------------------------
 
 DATA_PATH       = Path("output/reports/annotated_results.csv")
 CHROMA_DIR      = Path("chroma_db")
@@ -33,9 +29,7 @@ COLLECTION_NAME = "recognition_records"
 EMBED_MODEL     = "all-MiniLM-L6-v2"
 TOP_K           = 20
 
-# ---------------------------------------------------------------------------
 # Singletons — loaded once, reused across all tool calls
-# ---------------------------------------------------------------------------
 
 _df: pd.DataFrame | None = None
 _embedder: SentenceTransformer | None = None
@@ -66,9 +60,7 @@ def _load_collection():
     return _collection
 
 
-# ---------------------------------------------------------------------------
 # Tool 1 — Vector Search
-# ---------------------------------------------------------------------------
 
 def vector_search(query: str, k: int = TOP_K) -> str:
     """
@@ -118,9 +110,7 @@ def vector_search(query: str, k: int = TOP_K) -> str:
     return "\n".join(lines)
 
 
-# ---------------------------------------------------------------------------
 # Tool 2 — Pandas Analytics
-# ---------------------------------------------------------------------------
 
 def pandas_analytics(query: str) -> str:
     """
@@ -316,9 +306,7 @@ def pandas_analytics(query: str) -> str:
     return "\n".join(results)
 
 
-# ---------------------------------------------------------------------------
 # Tool 3 — Substitution
-# ---------------------------------------------------------------------------
 
 def substitution(query: str) -> str:
     """
@@ -404,9 +392,7 @@ def substitution(query: str) -> str:
     return "\n".join(lines)
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def _extract_n(query: str, default: int = 5) -> int:
     """Extract a number from query like 'top 10' or 'top five'."""
@@ -462,9 +448,7 @@ def _extract_target_role(query: str, df: pd.DataFrame) -> str | None:
     return None
 
 
-# ---------------------------------------------------------------------------
 # Quick test
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     print("=" * 60)

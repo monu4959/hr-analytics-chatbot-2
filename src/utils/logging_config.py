@@ -11,15 +11,12 @@ Usage:
 
 import logging
 import logging.handlers
-import os
-import sys
-from datetime import datetime
 from pathlib import Path
 
 from rich.console import Console
 from rich.logging import RichHandler
 
-# ── Constants ────────────────────────────────────────────────────────────────
+# Constants
 
 LOG_DIR = Path("logs")
 LOG_FORMAT = "%(asctime)s | %(name)s | %(levelname)s | %(message)s"
@@ -30,7 +27,7 @@ BACKUP_COUNT = 5               # Keep last 5 rotated files
 # Shared Rich console (used for pretty terminal output anywhere in the app)
 console = Console()
 
-# ── Setup ─────────────────────────────────────────────────────────────────────
+# Setup
 
 
 def setup_logging(
@@ -52,14 +49,14 @@ def setup_logging(
     log_dir.mkdir(parents=True, exist_ok=True)
     level = getattr(logging, log_level.upper(), logging.INFO)
 
-    # ── Root logger ───────────────────────────────────────────────────────────
+    # Root logger
     root = logging.getLogger()
     root.setLevel(level)
 
     # Remove any handlers already attached (avoids duplicate logs in notebooks)
     root.handlers.clear()
 
-    # ── Handler 1: Rich console ───────────────────────────────────────────────
+    # Handler 1: Rich console
     rich_handler = RichHandler(
         console=console,
         show_time=True,
@@ -71,7 +68,7 @@ def setup_logging(
     rich_handler.setLevel(level)
     root.addHandler(rich_handler)
 
-    # ── Handler 2: Rotating file (main log) ──────────────────────────────────
+    # Handler 2: Rotating file (main log)
     main_log_path = log_dir / "pipeline.log"
     file_handler = logging.handlers.RotatingFileHandler(
         filename=main_log_path,
@@ -83,7 +80,7 @@ def setup_logging(
     file_handler.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=DATE_FORMAT))
     root.addHandler(file_handler)
 
-    # ── Handler 3: Cost tracking log ─────────────────────────────────────────
+    # Handler 3: Cost tracking log
     cost_logger = logging.getLogger("costs")
     cost_log_path = log_dir / "costs.log"
     cost_handler = logging.FileHandler(cost_log_path, encoding="utf-8")

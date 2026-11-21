@@ -13,14 +13,12 @@ Route types:
 """
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
 
-# ---------------------------------------------------------------------------
 # Route types
-# ---------------------------------------------------------------------------
 
 class RouteType(str, Enum):
     ANALYTICAL   = "analytical"
@@ -37,9 +35,7 @@ class Confidence(str, Enum):
     LOW    = "low"
 
 
-# ---------------------------------------------------------------------------
 # Route decision
-# ---------------------------------------------------------------------------
 
 @dataclass
 class RouteDecision:
@@ -51,9 +47,7 @@ class RouteDecision:
     rewrite:    Optional[str] = None
 
 
-# ---------------------------------------------------------------------------
 # Signal banks
-# ---------------------------------------------------------------------------
 
 _ANALYTICAL = [
     r"\bhow many\b", r"\bcount\b", r"\btotal\b", r"\bnumber of\b",
@@ -109,9 +103,7 @@ _HYBRID = [
 ]
 
 
-# ---------------------------------------------------------------------------
 # Router
-# ---------------------------------------------------------------------------
 
 class QueryRouter:
     """
@@ -207,9 +199,7 @@ class QueryRouter:
         return Confidence.LOW
 
 
-# ---------------------------------------------------------------------------
 # CRAG — Corrective RAG self-checker
-# ---------------------------------------------------------------------------
 
 class CRAGChecker:
     """
@@ -239,9 +229,7 @@ class CRAGChecker:
         return len(q_words & t_words) / len(q_words)
 
 
-# ---------------------------------------------------------------------------
 # Quick test
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     router = QueryRouter()
@@ -270,4 +258,4 @@ if __name__ == "__main__":
         print(f"Confidence: {d.confidence.value}")
         print(f"Reasoning:  {d.reasoning}")
         if d.use_crag:
-            print(f"CRAG:       enabled")
+            print("CRAG:       enabled")

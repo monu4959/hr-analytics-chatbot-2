@@ -17,7 +17,8 @@ import os
 import json as _json
 from pathlib import Path
 
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # Make sure project root is on path
@@ -33,7 +34,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ── Agent ────────────────────────────────────────────────────────────────────────
+# Agent
 try:
     from src.rag.agent import chat as agent_chat, clear_session
     AGENT_AVAILABLE = True
@@ -52,7 +53,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Data loading ──────────────────────────────────────────────────────────────
+# Data loading
 
 DATA_PATHS = [
     Path("output/reports/annotated_results.csv"),
@@ -113,7 +114,7 @@ def load_df() -> pd.DataFrame:
     raise FileNotFoundError("annotated_results.csv not found in any expected location.")
 
 
-# ── /api/stats ────────────────────────────────────────────────────────────────
+# /api/stats
 
 @app.get("/api/stats")
 def get_stats():
@@ -128,7 +129,7 @@ def get_stats():
 
     total = len(df)
 
-    # ── Category breakdown ────────────────────────────────────────────────────
+    # Category breakdown
     cat_summary = (
         df.groupby("category_name")
         .agg(count=("message", "size"), avg_len=("msg_len", "mean"))
@@ -141,7 +142,7 @@ def get_stats():
 
     categories = cat_summary.to_dict(orient="records")
 
-    # ── Subcategory breakdown ─────────────────────────────────────────────────
+    # Subcategory breakdown
     sub_summary = (
         df.groupby(["category_name", "subcategory_name", "subcategory_id"])
         .agg(count=("message", "size"), avg_len=("msg_len", "mean"))
@@ -153,7 +154,7 @@ def get_stats():
 
     subcategories = sub_summary.to_dict(orient="records")
 
-    # ── Role × category cross-tab ─────────────────────────────────────────────
+    # Role × category cross-tab
     role_cat = pd.crosstab(df["role_group"], df["category_name"])
     role_cat = role_cat[role_cat.sum(axis=1) >= 15]
     role_cat_pct = (role_cat.div(role_cat.sum(axis=1), axis=0) * 100).round(1)
@@ -168,7 +169,7 @@ def get_stats():
 
     role_theme.sort(key=lambda x: x.get("Team Enablement", 0), reverse=True)
 
-    # ── Give vs receive ───────────────────────────────────────────────────────
+    # Give vs receive
     df["nom_group"] = df["nominator_title"].apply(classify_role)
 
     gives    = df.groupby("nom_group").size().rename("gives")
@@ -183,7 +184,7 @@ def get_stats():
 
     give_receive = gr[["role", "gives_pct", "receives_pct"]].to_dict(orient="records")
 
-    # ── Top recognition flows ─────────────────────────────────────────────────
+    # Top recognition flows
     flow_df = (
         df.groupby(["nom_group", "role_group"])
         .size()
@@ -207,7 +208,7 @@ def get_stats():
             "mutual":    reverse_exists,
         })
 
-    # ── Message length by category ────────────────────────────────────────────
+    # Message length by category
     msg_len_by_cat = []
     for cat in df["category_name"].unique():
         lens = df[df["category_name"] == cat]["msg_len"].tolist()
@@ -222,14 +223,14 @@ def get_stats():
             "max":       int(np.min([np.max(lens), int(np.percentile(lens, 95))])),
         })
 
-    # ── KPIs ──────────────────────────────────────────────────────────────────
+    # KPIs
     top_cat          = cat_summary.iloc[0]
     bottom_cat       = cat_summary.iloc[-1]
     top_sub          = sub_summary.iloc[0]
     top2_pct         = round(float(cat_summary.iloc[0]["pct"]) + float(cat_summary.iloc[1]["pct"]), 1)
     ratio_top_bottom = round(float(top_cat["count"]) / float(bottom_cat["count"]), 1)
 
-    # ── Sample messages for explorer ──────────────────────────────────────────
+    # Sample messages for explorer
     sample_cols = ["message", "award_title", "recipient_title", "nominator_title",
                    "category_name", "category_short", "subcategory_name",
                    "subcategory_id", "msg_len"]
@@ -271,7 +272,7 @@ def get_stats():
     }
 
 
-# ── Groq caller (used by /api/visualize) ──────────────────────────────────────
+# Groq caller (used by /api/visualize)
 
 def _call_groq(prompt: str) -> str:
     """
@@ -303,7 +304,7 @@ def _call_groq(prompt: str) -> str:
         raise HTTPException(status_code=502, detail=f"Groq API error: {err_str[:300]}")
 
 
-# ── /api/visualize ────────────────────────────────────────────────────────────
+# /api/visualize
 
 class VisualizeRequest(BaseModel):
     query: str
@@ -318,7 +319,7 @@ def visualize_endpoint(req: VisualizeRequest):
     4. Returns it to the frontend to render — no hardcoded charts
     """
 
-    # ── Load data ──────────────────────────────────────────────────────────
+    # Load data
     try:
         df = load_df()
     except FileNotFoundError as e:
@@ -326,7 +327,7 @@ def visualize_endpoint(req: VisualizeRequest):
 
     total = len(df)
 
-    # ── Build data summary ─────────────────────────────────────────────────
+    # Build data summary
     cat_counts = df["category_name"].value_counts().to_dict()
     sub_counts = df["subcategory_name"].value_counts().head(20).to_dict()
 
@@ -357,7 +358,7 @@ def visualize_endpoint(req: VisualizeRequest):
         "monthly_trend": monthly,
     }
 
-    # ── Build prompt ───────────────────────────────────────────────────────
+    # Build prompt
     prompt = f"""You are a data visualization expert. Given HR recognition data and a user question,
 return a Chart.js v4 configuration object as valid JSON.
 
@@ -398,10 +399,10 @@ Respond ONLY with a single valid JSON object — no markdown, no backticks, no e
   }}
 }}"""
 
-    # ── Call Groq ──────────────────────────────────────────────────────────
+    # Call Groq
     raw_text = _call_groq(prompt)
 
-    # ── Parse response ─────────────────────────────────────────────────────
+    # Parse response
     raw_text = raw_text.strip()
 
     # Strip markdown fences if model wraps in ```json ... ```
@@ -438,7 +439,7 @@ Respond ONLY with a single valid JSON object — no markdown, no backticks, no e
     return result
 
 
-# ── Chart type inference ──────────────────────────────────────────────────────
+# Chart type inference
 
 ROLE_KEYWORDS = [
     "engineering", "leadership", "customer service", "marketing",
@@ -478,7 +479,7 @@ def infer_chart_type(route: str, tools_used: list, query: str) -> Optional[str]:
     return "themes"
 
 
-# ── /api/chat ─────────────────────────────────────────────────────────────────
+# /api/chat
 
 class ChatRequest(BaseModel):
     message:    str

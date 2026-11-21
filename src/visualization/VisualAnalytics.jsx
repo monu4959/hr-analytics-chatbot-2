@@ -18,9 +18,7 @@ const SUGGESTIONS = [
   "Which role groups are most isolated?",
 ];
 
-// ---------------------------------------------------------------------------
 // Chart.js — load once globally
-// ---------------------------------------------------------------------------
 let _chartJsReady = null;
 function loadChartJs() {
   if (_chartJsReady) return _chartJsReady;
@@ -34,9 +32,7 @@ function loadChartJs() {
   return _chartJsReady;
 }
 
-// ---------------------------------------------------------------------------
 // ChartRenderer — destroys old instance, mounts new one from Groq config
-// ---------------------------------------------------------------------------
 function ChartRenderer({ config }) {
   const canvasRef = useRef(null);
   const instanceRef = useRef(null);
@@ -70,9 +66,7 @@ function ChartRenderer({ config }) {
   );
 }
 
-// ---------------------------------------------------------------------------
 // LoadingSkeleton
-// ---------------------------------------------------------------------------
 function LoadingSkeleton({ message }) {
   return (
     <div style={{ padding: "24px 0" }}>
@@ -101,9 +95,7 @@ function LoadingSkeleton({ message }) {
   );
 }
 
-// ---------------------------------------------------------------------------
 // MetricCards
-// ---------------------------------------------------------------------------
 function MetricCards({ metrics }) {
   if (!metrics || metrics.length === 0) return null;
   return (
@@ -120,9 +112,7 @@ function MetricCards({ metrics }) {
   );
 }
 
-// ---------------------------------------------------------------------------
 // Legend
-// ---------------------------------------------------------------------------
 function Legend({ config }) {
   if (!config) return null;
   const datasets = config.data?.datasets || [];
@@ -153,9 +143,7 @@ function Legend({ config }) {
   );
 }
 
-// ---------------------------------------------------------------------------
 // Main VisualAnalytics component
-// ---------------------------------------------------------------------------
 export function VisualAnalytics({ stats }) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -208,7 +196,7 @@ export function VisualAnalytics({ stats }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", background: "#f9fafb", overflow: "hidden" }}>
 
-      {/* ── Query bar ── */}
+      {/* Query bar */}
       <div style={{
         padding: "14px 20px 12px", borderBottom: "0.5px solid rgba(0,0,0,0.07)",
         background: "white", flexShrink: 0,
@@ -265,7 +253,7 @@ export function VisualAnalytics({ stats }) {
         </div>
       </div>
 
-      {/* ── Chart area ── */}
+      {/* Chart area */}
       <div style={{ flex: 1, overflowY: "auto", padding: "20px 20px 32px" }}>
 
         {/* Empty state */}

@@ -49,7 +49,7 @@ def _try_parse(text: str):
         pass
     try:
         return json5.loads(text)
-    except Exception:
+    except ValueError:
         pass
     return None
 

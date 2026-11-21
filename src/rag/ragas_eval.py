@@ -19,7 +19,8 @@ import sys
 import os
 import time
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 from pathlib import Path
@@ -28,7 +29,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from dotenv import load_dotenv
 load_dotenv()
 
-import pandas as pd
 from datasets import Dataset
 from ragas import evaluate
 from ragas.metrics import faithfulness, answer_relevancy, context_precision
@@ -42,18 +42,14 @@ from src.rag.tools import vector_search, pandas_analytics
 from src.rag.graph_tool import graph_query
 from src.rag.router import QueryRouter
 
-# ---------------------------------------------------------------------------
 # Config
-# ---------------------------------------------------------------------------
 
 OUTPUT_DIR    = Path("output/reports")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 SLEEP_BETWEEN = 15
 RETRY_SLEEP   = 30
 
-# ---------------------------------------------------------------------------
 # Eval questions — 10 total, one per route type
-# ---------------------------------------------------------------------------
 
 EVAL_QUESTIONS = [
     "How many awards are in each category?",
@@ -68,9 +64,7 @@ EVAL_QUESTIONS = [
     "Which subcategory has the most awards and what do those messages say?",
 ]
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def retrieve_context(question: str) -> list[str]:
     router   = QueryRouter()
@@ -114,9 +108,7 @@ def safe_generate(client, question: str, contexts: list[str], attempt: int = 1) 
         raise
 
 
-# ---------------------------------------------------------------------------
 # Build dataset — RAGAS 0.4.3 column names
-# ---------------------------------------------------------------------------
 
 def build_dataset(client) -> Dataset:
     print(f"\n[2/4] Building dataset ({len(EVAL_QUESTIONS)} questions, {SLEEP_BETWEEN}s sleep between calls)...\n")
@@ -139,7 +131,7 @@ def build_dataset(client) -> Dataset:
             print(f"        sleeping {SLEEP_BETWEEN}s...")
             time.sleep(SLEEP_BETWEEN)
 
-    print(f"\n  Dataset ready ✓")
+    print("\n  Dataset ready ✓")
 
     # RAGAS 0.4.3 uses these exact column names
     return Dataset.from_dict({
@@ -150,9 +142,7 @@ def build_dataset(client) -> Dataset:
     })
 
 
-# ---------------------------------------------------------------------------
 # Run evaluation
-# ---------------------------------------------------------------------------
 
 def run_evaluation():
     print("=" * 60)
@@ -239,8 +229,8 @@ def run_evaluation():
     print(f"  Grade:             {grade}")
 
     # Per-question table
-    print(f"\n  Per-question breakdown:")
-    header_cols = [q_col] + ([f_col] if f_col else []) + ([r_col] if r_col else []) + ([p_col] if p_col else [])
+    print("\n  Per-question breakdown:")
+    [q_col] + ([f_col] if f_col else []) + ([r_col] if r_col else []) + ([p_col] if p_col else [])
     print(f"  {'Question':<55}", end="")
     if f_col: print(f" {'Faith':>6}", end="")
     if r_col: print(f" {'Relev':>6}", end="")
@@ -261,8 +251,8 @@ def run_evaluation():
         f.write("RAGAS EVALUATION SUMMARY\n")
         f.write("=" * 40 + "\n\n")
         f.write(f"Questions evaluated : {len(EVAL_QUESTIONS)}\n")
-        f.write(f"Route types tested  : Analytical, Semantic, Graph, Hybrid\n\n")
-        f.write(f"SCORES:\n")
+        f.write("Route types tested  : Analytical, Semantic, Graph, Hybrid\n\n")
+        f.write("SCORES:\n")
         f.write(f"  Faithfulness      : {f_score:.3f}\n" if str(f_score) != "nan" else "  Faithfulness      : N/A\n")
         f.write(f"  Answer Relevancy  : {r_score:.3f}\n" if str(r_score) != "nan" else "  Answer Relevancy  : N/A\n")
         f.write(f"  Context Precision : {p_score:.3f}\n" if str(p_score) != "nan" else "  Context Precision : N/A\n")

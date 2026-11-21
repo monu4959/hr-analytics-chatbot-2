@@ -30,8 +30,8 @@ try:
     from src.rag.neo4j_tool import neo4j_query
     neo4j_query("test")
     NEO4J_AVAILABLE = True
-except Exception:
-    pass
+except Exception as e:  # any driver/connection failure -> use the in-memory graph
+    print(f"[Graph] Neo4j unavailable ({type(e).__name__}); using NetworkX fallback")
 
 # Always import graph_tool as fallback
 try:
@@ -39,9 +39,7 @@ try:
 except ImportError:
     def graph_query(q):
         return "Graph tool not available."
-# ---------------------------------------------------------------------------
 # Config
-# ---------------------------------------------------------------------------
 
 GROQ_MODEL  = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 TEMPERATURE = 0.3
@@ -68,9 +66,7 @@ Guidelines:
 - Format responses clearly with headers when answering complex questions
 """
 
-# ---------------------------------------------------------------------------
 # Groq client
-# ---------------------------------------------------------------------------
 
 _client = None
 
@@ -118,9 +114,7 @@ def _call_groq(messages: list, trace: list, max_retries: int = 3) -> str:
     raise RuntimeError(f"Groq request failed after {max_retries} attempts. Last error: {last_error}")
 
 
-# ---------------------------------------------------------------------------
 # Session memory
-# ---------------------------------------------------------------------------
 
 _sessions: dict[str, list] = {}
 
@@ -141,9 +135,7 @@ def clear_session(session_id: str = "default"):
     _sessions.pop(session_id, None)
 
 
-# ---------------------------------------------------------------------------
 # Tool runner
-# ---------------------------------------------------------------------------
 
 def _run_tools(tool_names: list, user_input: str) -> dict:
     outputs = {}
@@ -169,9 +161,7 @@ def _run_tools(tool_names: list, user_input: str) -> dict:
     return outputs
 
 
-# ---------------------------------------------------------------------------
 # Message builder (OpenAI-compatible format for Groq)
-# ---------------------------------------------------------------------------
 
 def _build_messages(history: list, user_input: str, context: str | None) -> list:
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -198,9 +188,7 @@ def _build_messages(history: list, user_input: str, context: str | None) -> list
     return messages
 
 
-# ---------------------------------------------------------------------------
 # Main chat function
-# ---------------------------------------------------------------------------
 
 def chat(user_input: str, session_id: str = "default") -> dict:
     """
@@ -286,9 +274,7 @@ def chat(user_input: str, session_id: str = "default") -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
 # Standalone test
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     print("=" * 60)

@@ -20,7 +20,10 @@ jobs:
       # Unit tests cover pure logic (router, CRAG, utils), so they only need
       # these packages, not the full ML stack in requirements.txt.
       - name: Install test dependencies
-        run: pip install pandas json5 rich pyyaml python-dotenv pytest
+        run: pip install pandas json5 rich pyyaml python-dotenv pytest ruff
+
+      - name: Lint (pyflakes rules)
+        run: ruff check --select F src tests
 
       - name: Run tests
         run: pytest -v

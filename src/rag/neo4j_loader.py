@@ -24,7 +24,8 @@ Re-running wipes and rebuilds cleanly.
 import sys
 import os
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -36,9 +37,7 @@ import pandas as pd
 from collections import defaultdict
 from neo4j import GraphDatabase
 
-# ---------------------------------------------------------------------------
 # Config
-# ---------------------------------------------------------------------------
 
 DATA_PATH = Path("output/reports/annotated_results.csv")
 
@@ -70,9 +69,7 @@ def classify_role(title: str) -> str:
     return "Other"
 
 
-# ---------------------------------------------------------------------------
 # Loader
-# ---------------------------------------------------------------------------
 
 def load_graph():
     print("=" * 60)

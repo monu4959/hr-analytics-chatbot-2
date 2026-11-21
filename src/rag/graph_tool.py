@@ -15,8 +15,6 @@ Usage:
     result = graph_query("which departments recognize each other most?")
 """
 
-import warnings
-warnings.filterwarnings("ignore")
 
 import re
 from pathlib import Path
@@ -25,9 +23,7 @@ from collections import defaultdict
 import pandas as pd
 import networkx as nx
 
-# ---------------------------------------------------------------------------
 # Config
-# ---------------------------------------------------------------------------
 
 DATA_PATH = Path("output/reports/annotated_results.csv")
 
@@ -59,9 +55,7 @@ def classify_role(title: str) -> str:
     return "Other"
 
 
-# ---------------------------------------------------------------------------
 # Graph builder — singleton
-# ---------------------------------------------------------------------------
 
 _graph: nx.DiGraph | None = None
 _df: pd.DataFrame | None  = None
@@ -128,9 +122,7 @@ def _build_graph() -> nx.DiGraph:
     return _graph
 
 
-# ---------------------------------------------------------------------------
 # Graph query tool
-# ---------------------------------------------------------------------------
 
 def graph_query(query: str) -> str:
     """
@@ -143,7 +135,7 @@ def graph_query(query: str) -> str:
         Formatted string with graph analysis results
     """
     G  = _build_graph()
-    df = _load_df()
+    _load_df()
     q  = query.lower()
     results = []
 
@@ -214,7 +206,7 @@ def graph_query(query: str) -> str:
             key=lambda x: x[1], reverse=True
         )
         if out_edges:
-            results.append(f"  Recognizes others:")
+            results.append("  Recognizes others:")
             for tgt, weight, cat in out_edges[:5]:
                 results.append(f"    → {tgt}: {weight} times (mainly: {cat})")
 
@@ -224,7 +216,7 @@ def graph_query(query: str) -> str:
             key=lambda x: x[1], reverse=True
         )
         if in_edges:
-            results.append(f"\n  Recognized by:")
+            results.append("\n  Recognized by:")
             for src, weight, cat in in_edges[:5]:
                 results.append(f"    ← {src}: {weight} times (mainly: {cat})")
         results.append("")
@@ -261,7 +253,7 @@ def get_graph_stats() -> dict:
     Return key graph statistics for display in dashboard.
     """
     G  = _build_graph()
-    df = _load_df()
+    _load_df()
 
     edges      = sorted(G.edges(data=True), key=lambda x: x[2]["weight"], reverse=True)
     centrality = nx.betweenness_centrality(G, weight="weight")
@@ -278,9 +270,7 @@ def get_graph_stats() -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
 # Helpers
-# ---------------------------------------------------------------------------
 
 def _extract_n(query: str, default: int = 5) -> int:
     word_nums = {"one":1,"two":2,"three":3,"four":4,"five":5,"six":6,"seven":7,"eight":8,"nine":9,"ten":10}
@@ -319,14 +309,12 @@ def _detect_group(query: str) -> str | None:
     return None
 
 
-# ---------------------------------------------------------------------------
 # Quick test
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     print("Building recognition graph...")
     stats = get_graph_stats()
-    print(f"\nGraph built:")
+    print("\nGraph built:")
     print(f"  Nodes: {stats['num_nodes']} role groups")
     print(f"  Edges: {stats['num_edges']} relationships")
     print(f"  Total recognitions: {stats['total_recognitions']}")

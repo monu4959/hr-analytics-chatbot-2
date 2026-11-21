@@ -11,7 +11,8 @@ Re-running wipes and rebuilds the collection cleanly.
 
 import sys
 import warnings
-warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -23,9 +24,7 @@ import pandas as pd
 import chromadb
 from sentence_transformers import SentenceTransformer
 
-# ---------------------------------------------------------------------------
 # Config
-# ---------------------------------------------------------------------------
 
 DATA_PATH       = Path("output/reports/annotated_results.csv")
 CHROMA_DIR      = Path("chroma_db")

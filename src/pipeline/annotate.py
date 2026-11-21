@@ -112,8 +112,8 @@ def parse_response(text, expected_count):
     except json.JSONDecodeError:
         try:
             parsed = json5.loads(clean)
-        except Exception as e:
-            raise ValueError("JSON parse failed: " + str(e))
+        except ValueError as e:
+            raise ValueError("JSON parse failed: " + str(e)) from e
 
     if not isinstance(parsed, list):
         raise ValueError("Response is not a JSON array")

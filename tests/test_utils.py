@@ -15,7 +15,7 @@ from src.utils.json_utils import extract_json
 from src.utils.data_utils import validate_schema, validate_data_quality, clean_dataframe
 
 
-# ── JSON Utils ────────────────────────────────────────────────────────────────
+# JSON Utils
 
 class TestExtractJson:
     def test_plain_json(self):
@@ -57,7 +57,7 @@ class TestExtractJson:
         assert result == [1, 2, 3]
 
 
-# ── Data Utils ────────────────────────────────────────────────────────────────
+# Data Utils
 
 class TestValidateSchema:
     def test_passes_with_required_cols(self):
