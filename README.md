@@ -1,6 +1,6 @@
 # HR Recognition Analytics — Agentic RAG Pipeline
 
-[![CI](https://github.com/monu4959/HR-Chatbot-2/actions/workflows/ci.yml/badge.svg)](https://github.com/monu4959/HR-Chatbot-2/actions/workflows/ci.yml)
+[![CI](https://github.com/monu4959/hr-analytics-chatbot-2/actions/workflows/ci.yml/badge.svg)](https://github.com/monu4959/hr-analytics-chatbot-2/actions/workflows/ci.yml)
 
 > Northeastern University × Workhuman Capstone — Spring 2026
 
@@ -213,8 +213,8 @@ A lightweight relevance gate based on keyword overlap between the query and the 
 
 ```bash
 # 1. Clone and set up the environment
-git clone https://github.com/monu4959/HR-Chatbot-2.git
-cd HR-Chatbot-2
+git clone https://github.com/monu4959/hr-analytics-chatbot-2.git
+cd hr-analytics-chatbot-2
 conda create -n hr-analytics python=3.11
 conda activate hr-analytics
 pip install -r requirements.txt
