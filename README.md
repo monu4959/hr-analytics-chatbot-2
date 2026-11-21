@@ -1,5 +1,7 @@
 # HR Recognition Analytics — Agentic RAG Pipeline
 
+[![CI](https://github.com/monu4959/HR-Chatbot-2/actions/workflows/ci.yml/badge.svg)](https://github.com/monu4959/HR-Chatbot-2/actions/workflows/ci.yml)
+
 > Northeastern University × Workhuman Capstone — Spring 2026
 
 End-to-end NLP pipeline that classifies 1,000 employee recognition messages into a hierarchical topic taxonomy using LLM-driven grounded theory, then builds an agentic RAG chatbot on top for natural language HR analytics.
@@ -19,7 +21,7 @@ End-to-end NLP pipeline that classifies 1,000 employee recognition messages into
 - **Hybrid retrieval:** combines ChromaDB semantic search, pandas analytics, and a 413-node recognition graph (Neo4j with a NetworkX fallback) behind a 6-route query router.
 - **Retrieval check before answering:** a CRAG-style relevance gate reranks or falls back to another tool when retrieved context is weak.
 - **Full stack:** FastAPI backend plus a React + Chart.js frontend, including natural-language chart generation from live data.
-- **Evaluated:** RAGAS answer relevancy of 0.776, plus a pytest unit test suite.
+- **Evaluated and tested:** RAGAS answer relevancy of 0.776; 42 unit tests (router, CRAG check, utilities) run in CI on every push, alongside a frontend build check.
 
 ## What it does
 
