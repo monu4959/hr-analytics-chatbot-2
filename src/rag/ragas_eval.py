@@ -1,8 +1,8 @@
 """
 src/rag/ragas_eval.py — RAGAS Evaluation for Agentic RAG
 =========================================================
-Fixed for RAGAS 0.4.3:
-  - Correct dataset column names (user_input, response, retrieved_contexts)
+Notes (RAGAS 0.4.3):
+  - Dataset columns: user_input, response, retrieved_contexts
   - Parallelism disabled to avoid TimeoutErrors on free tier
   - 15s sleep between answer generation calls
   - 30s sleep before RAGAS metrics run
